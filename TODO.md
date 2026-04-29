@@ -3558,7 +3558,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3059 walk full descendant tree in _watchdog_tree_cpu (BFS, not one-level) #auto-dispatch #bug #framework ref:GH#21787
 
-- [ ] t3063 add kill_reason field to [lifecycle] worker_exited line #auto-dispatch #bug #framework ref:GH#21790
+- [x] t3063 add kill_reason field to [lifecycle] worker_exited line #auto-dispatch #bug #framework ref:GH#21790 pr:#21795 completed:2026-04-29
 
 - [ ] t3062 add trusted-issue-author allowlist to bypass t2449 gate for peer-runner-filed issues #auto-dispatch #enhancement ref:GH#21789
 
