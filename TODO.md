@@ -3564,7 +3564,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3064 extend PR #21733 fix — use gh_issue_edit_safe in remaining hot-path body updates #auto-dispatch #bug ref:GH#21798
 
-- [ ] t3065 worktree-helper.sh remove emits BSD sed regex error after cleanup #auto-dispatch #bug #framework ref:GH#21801
+- [x] t3065 worktree-helper.sh remove emits BSD sed regex error after cleanup #auto-dispatch #bug #framework ref:GH#21801 pr:#21802 completed:2026-04-29
 
 - [ ] t3066 extend approve_collaborator_pr to honour crypto-approval as CONTRIBUTOR-author bypass (sibling of t3052) #auto-dispatch #bug ref:GH#21803
 
