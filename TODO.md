@@ -866,7 +866,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3220 pre-edit-check: path traversal and absolute-path-outside-repo cases create worktree instead of blocking #auto-dispatch #bug #security ref:GH#21963
 
-- [ ] t3228 Refactor conflict-pattern classifier below function-complexity gate #auto-dispatch #bug ref:GH#21981
+- [x] t3228 Refactor conflict-pattern classifier below function-complexity gate #auto-dispatch #bug ref:GH#21981 pr:#21986 completed:2026-04-30
 
 - [ ] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug blocked-by:t3228 ref:GH#21985
 
@@ -3695,7 +3695,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3227 auto-update deploy race wipes ~/.aidevops/agents/ leaving OpenCode unable to launch #auto-dispatch #bug #framework ref:GH#21973
 
-- [ ] t3228 Refactor conflict-pattern classifier below function-complexity gate #auto-dispatch #bug ref:GH#21981
+- [x] t3228 Refactor conflict-pattern classifier below function-complexity gate #auto-dispatch #bug ref:GH#21981 pr:#21986 completed:2026-04-30
 
 - [ ] t3229 fix OpenAI OAuth availability when env key is stale #auto-dispatch #bug #models ref:GH#21983
 
