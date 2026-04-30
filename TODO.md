@@ -3662,3 +3662,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3213 maintainer-gate: switch check-pr concurrency to cancel-in-progress: true #auto-dispatch #bug ref:GH#21947
 
 - [ ] t3214 proxy-lifecycle: shared lazy-start helper for cursor + google + claude proxies #auto-dispatch #refactor ref:GH#21948
+
+- [ ] t3215 diagnostic reliability — worker-activity-helper.sh summary + canonical-sources rule #bug ref:GH#21949
