@@ -3657,7 +3657,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3208 Circuit-breaker trip should auto-file sibling root-cause investigation task #auto-dispatch #bug #framework ref:GH#21923 pr:#21979 completed:2026-04-30
 
-- [ ] t3210 canary: skip with 'overload' reason when system load >> NCPU (prevents circuit-breaker trip cycle) #bug #framework ref:GH#21931
+- [x] t3210 canary: skip with 'overload' reason when system load >> NCPU (prevents circuit-breaker trip cycle) #bug #framework ref:GH#21931 pr:#21937 completed:2026-04-30
 
 - [x] t3209 pulse-unbound-var-check.yml diff-scoping double-counts replaced lines #auto-dispatch #bug ref:GH#21930 pr:#21940 completed:2026-04-30
 
