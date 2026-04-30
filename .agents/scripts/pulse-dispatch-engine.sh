@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: MIT
 # SPDX-FileCopyrightText: 2025-2026 Marcus Quinn
-# pulse-dispatch-engine.sh — High-level dispatch engine — worker launch check, ranked candidate build, deterministic fill-floor, LLM supervisor gate, backlog snapshot, adaptive launch settle wait, utilization invariants, underfill recycler + re-fill during active cycle, pre-flight stages, initial underfill computation, early-exit recycle loop.
+# pulse-dispatch-engine.sh — High-level dispatch engine — worker launch check, ranked candidate build, dispatch_max, LLM supervisor gate, backlog snapshot, adaptive launch settle wait, utilization invariants, underfill recycler + re-fill during active cycle, pre-flight stages, initial underfill computation, early-exit recycle loop.
 #
 # Extracted from pulse-wrapper.sh in Phase 9 of the phased decomposition
 # (parent: GH#18356, plan: todo/plans/pulse-wrapper-decomposition.md §6).
@@ -13,11 +13,11 @@
 # Public functions in this module (in source order):
 #   - check_worker_launch
 #   - build_ranked_dispatch_candidates_json
-#   - dispatch_deterministic_fill_floor
+#   - dispatch_max
 #   - _should_run_llm_supervisor
 #   - _update_backlog_snapshot
 #   - _adaptive_launch_settle_wait
-#   - apply_deterministic_fill_floor
+#   - apply_dispatch_max
 #   - enforce_utilization_invariants
 #   - run_underfill_worker_recycler
 #   - maybe_refill_underfilled_pool_during_active_pulse
@@ -26,12 +26,12 @@
 #   - _run_early_exit_recycle_loop
 #
 # Internal helpers (GH#18656 function decomposition):
-#   _dff_*                 — helpers for dispatch_deterministic_fill_floor
+#   _dispatch_*                 — helpers for dispatch_max
 #   _preflight_*           — helpers for _run_preflight_stages
 #
 # Phase 9 origin: pure move from pulse-wrapper.sh, byte-identical bodies.
 # GH#18656 split the two functions that still exceeded 100 lines
-# (dispatch_deterministic_fill_floor=202, _run_preflight_stages=134)
+# (dispatch_max=202, _run_preflight_stages=134)
 # into focused helpers while preserving byte-for-byte behavior.
 
 [[ -n "${_PULSE_DISPATCH_ENGINE_LOADED:-}" ]] && return 0
@@ -45,20 +45,30 @@ _PULSE_DISPATCH_ENGINE_LOADED=1
 : "${REPOS_JSON:=${HOME}/.config/aidevops/repos.json}"
 : "${PIDFILE:=${HOME}/.aidevops/logs/pulse.pid}"
 : "${PRE_RUN_STAGE_TIMEOUT:=600}"
-# t2989: per-candidate cap inside dispatch_deterministic_fill_floor so a single
+# t2989: per-candidate cap inside dispatch_max so a single
 # hung dispatch_with_dedup call cannot consume the parent stage's full 600s
 # budget. Canonical failure: preflight_early_dispatch 0/8 success rate after
 # 07:00Z 2026-04-27 — single hung iter consumed the whole stage; cycle
 # cadence collapsed from ~2min to ~40min. 30s is generous: dedup check +
 # nohup worker spawn normally completes in <5s.
-: "${FILL_FLOOR_PER_CANDIDATE_TIMEOUT:=30}"
-# t3005/t3014: parallel dispatch concurrency for dispatch_deterministic_fill_floor.
+#
+# t3015 back-compat: honour deprecated FILL_FLOOR_PER_CANDIDATE_TIMEOUT name.
+# Operators who set the old name in their environment / launchd plist before
+# upgrading should not silently lose their override. Emit a one-shot stderr
+# warning and bridge the value into the new variable. Remove in v4.0.
+if [[ -n "${FILL_FLOOR_PER_CANDIDATE_TIMEOUT:-}" && -z "${DISPATCH_PER_CANDIDATE_TIMEOUT:-}" ]]; then
+	echo "[pulse-wrapper] WARNING: FILL_FLOOR_PER_CANDIDATE_TIMEOUT is deprecated — use DISPATCH_PER_CANDIDATE_TIMEOUT (t3015)" >&2
+	DISPATCH_PER_CANDIDATE_TIMEOUT="$FILL_FLOOR_PER_CANDIDATE_TIMEOUT"
+	export DISPATCH_PER_CANDIDATE_TIMEOUT
+fi
+: "${DISPATCH_PER_CANDIDATE_TIMEOUT:=30}"
+# t3005/t3014: parallel dispatch concurrency for dispatch_max.
 # Each successful dispatch takes ~30-180s (gh API ceremony + worktree-helper.sh
 # add + worker spawn) so the previous serial loop capped throughput at ~1
 # dispatch per pulse cycle.
 #
 # Default (t3014): unset → max_parallel = _effective_slots (typically 24, the
-# full slot budget). The cap inside _dff_compute_max_parallel still clamps at
+# full slot budget). The cap inside _dispatch_max_compute_parallel still clamps at
 # _effective_slots, so the default never exceeds capacity. Setting an explicit
 # integer overrides the default. Set to 1 to retain the legacy serial behavior
 # (regression escape hatch); set to a smaller integer to ration concurrency.
@@ -98,16 +108,16 @@ if [[ -f "${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}/dispatch-
 fi
 
 # GH#21738: Source extracted helper sub-libraries (orchestrator + sub-library
-# split per reference/large-file-split.md). The fill-floor lib carries all
-# `_dff_*` helpers + module-level _DFF_ counters + pulse_dispatch_debug_log;
+# split per reference/large-file-split.md). The dispatch lib carries all
+# `_dispatch_*` helpers + module-level _DISPATCH_ counters + pulse_dispatch_debug_log;
 # the preflight lib carries all `_preflight_*` helpers. The orchestrator
-# retains dispatch_deterministic_fill_floor, _run_preflight_stages, and
+# retains dispatch_max, _run_preflight_stages, and
 # run_underfill_worker_recycler (>100-line bodies — moving them would
 # re-register them as new function-complexity violations under their new
 # (file, fname) identity keys).
-# shellcheck source=./pulse-dispatch-fill-floor-lib.sh
+# shellcheck source=./pulse-dispatch-lib.sh
 # shellcheck disable=SC1091  # sub-library resolved at runtime via $SCRIPT_DIR
-source "${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}/pulse-dispatch-fill-floor-lib.sh"
+source "${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}/pulse-dispatch-lib.sh"
 # shellcheck source=./pulse-dispatch-preflight-lib.sh
 # shellcheck disable=SC1091  # sub-library resolved at runtime via $SCRIPT_DIR
 source "${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}/pulse-dispatch-preflight-lib.sh"
@@ -251,24 +261,24 @@ build_ranked_dispatch_candidates_json() {
 
 
 #######################################
-# Deterministic fill floor for obvious backlog.
+# Dispatch_max for obvious backlog.
 #
 # This is intentionally narrow: it only materializes already-eligible issues
 # and fills empty local slots. Ranking remains simple and auditable; judgment
 # stays with the pulse LLM for merges, blockers, and unusual edge cases.
 #
-# t3005/t3014: Loop body extracted into _dff_dispatch_loop_serial /
-# _dff_dispatch_loop_parallel — the orchestrator picks one based on
-# DISPATCH_FILL_FLOOR_PARALLEL (t3014 default = effective_slots when unset)
+# t3005/t3014: Loop body extracted into _dispatch_floor_loop /
+# _dispatch_max_loop — the orchestrator picks one based on
+# DISPATCH_MAX_PARALLEL (t3014 default = effective_slots when unset)
 # and adaptive throttle state. Throttle mode forces serial (1 dispatch per
 # round) to preserve the existing "test the waters" recovery semantics;
 # otherwise parallel is preferred so the 24-slot pool fills in 1 cycle.
 #
 # Returns: dispatched worker count via stdout
 #######################################
-dispatch_deterministic_fill_floor() {
+dispatch_max() {
 	local capacity_line
-	capacity_line=$(_dff_compute_capacity) || {
+	capacity_line=$(_dispatch_compute_capacity) || {
 		echo 0
 		return 0
 	}
@@ -286,7 +296,7 @@ dispatch_deterministic_fill_floor() {
 	local self_login
 	self_login=$(gh api user --jq '.login' 2>/dev/null || echo "")
 	if [[ -z "$self_login" ]]; then
-		echo "[pulse-wrapper] Deterministic fill floor skipped: unable to resolve GitHub login" >>"$LOGFILE"
+		echo "[pulse-wrapper] Dispatch_max skipped: unable to resolve GitHub login" >>"$LOGFILE"
 		echo 0
 		return 0
 	fi
@@ -300,12 +310,12 @@ dispatch_deterministic_fill_floor() {
 		return 0
 	fi
 
-	echo "[pulse-wrapper] Deterministic fill floor: available=${available_slots}, runnable=${runnable_count}, queued_without_worker=${queued_without_worker}, candidates=${candidate_count}" >>"$LOGFILE"
+	echo "[pulse-wrapper] Dispatch_max: available=${available_slots}, runnable=${runnable_count}, queued_without_worker=${queued_without_worker}, candidates=${candidate_count}" >>"$LOGFILE"
 
 	local prepass_line=""
 	local triage_dispatched=0
-	if ! prepass_line=$(_dff_run_prepasses "$available_slots" 2>>"$LOGFILE"); then
-		echo "[pulse-wrapper] Deterministic fill floor: _dff_run_prepasses returned non-zero — assuming 0 triage/enrichment, full slot budget" >>"$LOGFILE"
+	if ! prepass_line=$(_dispatch_run_prepasses "$available_slots" 2>>"$LOGFILE"); then
+		echo "[pulse-wrapper] Dispatch_max: _dispatch_run_prepasses returned non-zero — assuming 0 triage/enrichment, full slot budget" >>"$LOGFILE"
 		prepass_line="${available_slots} 0"
 	fi
 	read -r available_slots triage_dispatched <<<"$prepass_line"
@@ -314,67 +324,124 @@ dispatch_deterministic_fill_floor() {
 	pulse_dispatch_debug_log "post-prepasses available_slots=${available_slots} triage_dispatched=${triage_dispatched}"
 
 	# Reset module-level round state before the dispatch loop (t1959).
-	_DFF_ROUND_DISPATCHED=0
-	_DFF_ROUND_NO_WORKER_FAILURES=0
-	_DFF_CONSECUTIVE_NO_WORKER=0
-	_DFF_THROTTLE_FILE="${HOME}/.aidevops/logs/dispatch-throttle"
-	_DFF_CANARY_CACHE="${AIDEVOPS_HEADLESS_RUNTIME_DIR:-${HOME}/.aidevops/.agent-workspace/headless-runtime}/canary-last-pass"
+	_DISPATCH_ROUND_DISPATCHED=0
+	_DISPATCH_ROUND_NO_WORKER_FAILURES=0
+	_DISPATCH_CONSECUTIVE_NO_WORKER=0
+	_DISPATCH_THROTTLE_FILE="${HOME}/.aidevops/logs/dispatch-throttle"
+	_DISPATCH_CANARY_CACHE="${AIDEVOPS_HEADLESS_RUNTIME_DIR:-${HOME}/.aidevops/.agent-workspace/headless-runtime}/canary-last-pass"
 
-	# Honour adaptive batch throttle — limit to 1 when runtime is degraded.
+	# t3015: branch on dispatch path (max = parallel, floor = forced-serial).
+	# _dispatch_should_use_floor_path returns 0 when the runtime is degraded
+	# (throttle file present) OR when an explicit caller invoked dispatch_floor
+	# (which sets _DISPATCH_FORCE_FLOOR=1). The floor path preserves the
+	# legacy "test the waters" behaviour as a regression escape hatch.
 	local _effective_slots="$available_slots"
-	if [[ -f "$_DFF_THROTTLE_FILE" ]]; then
+	local _dispatch_path="max"
+	if _dispatch_should_use_floor_path; then
 		_effective_slots=1
-		echo "[pulse-wrapper] Dispatch throttle active: limiting implementation batch to 1 (runtime degraded)" >>"$LOGFILE"
+		_dispatch_path="floor"
+		if [[ -f "$_DISPATCH_THROTTLE_FILE" ]]; then
+			echo "[pulse-wrapper] Dispatch floor path engaged (throttle file present): limiting implementation batch to 1 (runtime degraded)" >>"$LOGFILE"
+		elif [[ -n "${_DISPATCH_FORCE_FLOOR:-}" ]]; then
+			echo "[pulse-wrapper] Dispatch floor path engaged (forced via _DISPATCH_FORCE_FLOOR — explicit dispatch_floor() caller)" >>"$LOGFILE"
+		fi
 	fi
 
-	# t3005: pick parallelism level (1 = serial, >1 = parallel via wait -n).
-	local _dff_max_parallel
-	_dff_max_parallel=$(_dff_compute_max_parallel "$_effective_slots")
+	# t3005/t3014: pick parallelism level (1 = serial, >1 = parallel via wait -n).
+	# In floor mode _effective_slots is already 1 → parallelism resolves to 1.
+	local _dispatch_max_parallel
+	_dispatch_max_parallel=$(_dispatch_max_compute_parallel "$_effective_slots")
 
-	echo "[pulse-wrapper] Deterministic fill floor: entering candidate loop with effective_slots=${_effective_slots}, max_parallel=${_dff_max_parallel}, candidates=${candidate_count}" >>"$LOGFILE"
-	local _dff_first_candidate_preview
-	_dff_first_candidate_preview=$(printf '%s' "$candidates_json" | jq -c '.[0]' 2>/dev/null || echo "<jq error>")
-	echo "[pulse-wrapper] Deterministic fill floor: first candidate preview (240 bytes): ${_dff_first_candidate_preview:0:240}" >>"$LOGFILE"
+	echo "[pulse-wrapper] Dispatch_max: entering candidate loop with effective_slots=${_effective_slots}, max_parallel=${_dispatch_max_parallel}, candidates=${candidate_count}" >>"$LOGFILE"
+	local _dispatch_first_candidate_preview
+	_dispatch_first_candidate_preview=$(printf '%s' "$candidates_json" | jq -c '.[0]' 2>/dev/null || echo "<jq error>")
+	echo "[pulse-wrapper] Dispatch_max: first candidate preview (240 bytes): ${_dispatch_first_candidate_preview:0:240}" >>"$LOGFILE"
 
 	# GH#18804 follow-up: feed candidates from a tempfile rather than process substitution.
-	local _dff_candidate_file=""
-	_dff_candidate_file=$(mktemp 2>/dev/null || echo "/tmp/aidevops-dff-candidates.$$")
-	if ! printf '%s' "$candidates_json" | jq -c '.[]' >"$_dff_candidate_file" 2>>"$LOGFILE"; then
-		echo "[pulse-wrapper] Deterministic fill floor: jq failed to enumerate candidates_json — aborting loop with 0 dispatches" >>"$LOGFILE"
-		rm -f "$_dff_candidate_file"
-		_dff_maybe_engage_throttle
-		echo "[pulse-wrapper] Deterministic fill floor complete: dispatched=${triage_dispatched} (${triage_dispatched} triage + 0 implementation), processed=0/${candidate_count}, target_available=${available_slots}" >>"$LOGFILE"
+	local _dispatch_candidate_file=""
+	_dispatch_candidate_file=$(mktemp 2>/dev/null || echo "/tmp/aidevops-dff-candidates.$$")
+	if ! printf '%s' "$candidates_json" | jq -c '.[]' >"$_dispatch_candidate_file" 2>>"$LOGFILE"; then
+		echo "[pulse-wrapper] Dispatch_max: jq failed to enumerate candidates_json — aborting loop with 0 dispatches" >>"$LOGFILE"
+		rm -f "$_dispatch_candidate_file"
+		_dispatch_maybe_engage_throttle
+		echo "[pulse-wrapper] Dispatch_max complete: dispatched=${triage_dispatched} (${triage_dispatched} triage + 0 implementation), processed=0/${candidate_count}, target_available=${available_slots}" >>"$LOGFILE"
 		echo "$triage_dispatched"
 		return 0
 	fi
-	local _dff_line_count
-	_dff_line_count=$(wc -l <"$_dff_candidate_file" 2>/dev/null | tr -d ' ' || echo 0)
-	echo "[pulse-wrapper] Deterministic fill floor: candidate enumeration produced ${_dff_line_count} lines in ${_dff_candidate_file}" >>"$LOGFILE"
+	local _dispatch_line_count
+	_dispatch_line_count=$(wc -l <"$_dispatch_candidate_file" 2>/dev/null | tr -d ' ' || echo 0)
+	echo "[pulse-wrapper] Dispatch_max: candidate enumeration produced ${_dispatch_line_count} lines in ${_dispatch_candidate_file}" >>"$LOGFILE"
 
-	# Branch: serial (throttle / DISPATCH_FILL_FLOOR_PARALLEL=1 / effective_slots=1) vs parallel.
+	# Branch: floor path (serial; throttle / forced) vs max path (parallel).
+	# _dispatch_max_parallel <= 1 implies floor mode (effective_slots was clamped to 1
+	# OR DISPATCH_MAX_PARALLEL=1 set explicitly as a regression escape hatch).
 	local dispatched_count=0 processed_count=0 loop_output=""
-	local _dff_outcomes_file=""
-	if ((_dff_max_parallel <= 1)); then
-		loop_output=$(_dff_dispatch_loop_serial "$_dff_candidate_file" "$_effective_slots" "$available_slots" "$self_login")
+	local _dispatch_outcomes_file=""
+	if ((_dispatch_max_parallel <= 1)); then
+		loop_output=$(_dispatch_floor_loop "$_dispatch_candidate_file" "$_effective_slots" "$available_slots" "$self_login")
 	else
-		_dff_outcomes_file=$(mktemp 2>/dev/null || echo "/tmp/aidevops-dff-outcomes.$$")
-		: >"$_dff_outcomes_file"
-		loop_output=$(_dff_dispatch_loop_parallel "$_dff_candidate_file" "$_effective_slots" "$available_slots" "$self_login" "$_dff_max_parallel" "$_dff_outcomes_file")
-		_dff_aggregate_outcomes "$_dff_outcomes_file"
-		rm -f "$_dff_outcomes_file"
+		_dispatch_outcomes_file=$(mktemp 2>/dev/null || echo "/tmp/aidevops-dispatch-outcomes.$$")
+		: >"$_dispatch_outcomes_file"
+		loop_output=$(_dispatch_max_loop "$_dispatch_candidate_file" "$_effective_slots" "$available_slots" "$self_login" "$_dispatch_max_parallel" "$_dispatch_outcomes_file")
+		_dispatch_max_aggregate_outcomes "$_dispatch_outcomes_file"
+		rm -f "$_dispatch_outcomes_file"
 	fi
 	read -r dispatched_count processed_count <<<"$loop_output"
 	[[ "$dispatched_count" =~ ^[0-9]+$ ]] || dispatched_count=0
 	[[ "$processed_count" =~ ^[0-9]+$ ]] || processed_count=0
-	rm -f "$_dff_candidate_file"
+	rm -f "$_dispatch_candidate_file"
 
-	echo "[pulse-wrapper] Deterministic fill floor: loop body finished — processed=${processed_count} dispatched=${dispatched_count} mode=$( ((_dff_max_parallel <= 1)) && echo serial || echo "parallel(${_dff_max_parallel})")" >>"$LOGFILE"
-	_dff_maybe_engage_throttle
+	echo "[pulse-wrapper] Dispatch path=${_dispatch_path}: loop body finished — processed=${processed_count} dispatched=${dispatched_count} mode=$( ((_dispatch_max_parallel <= 1)) && echo serial || echo "parallel(${_dispatch_max_parallel})")" >>"$LOGFILE"
+	_dispatch_maybe_engage_throttle
 
 	local total_dispatched=$((dispatched_count + triage_dispatched))
-	echo "[pulse-wrapper] Deterministic fill floor complete: dispatched=${total_dispatched} (${triage_dispatched} triage + ${dispatched_count} implementation), processed=${processed_count}/${candidate_count}, target_available=${available_slots}" >>"$LOGFILE"
+	echo "[pulse-wrapper] Dispatch path=${_dispatch_path} complete: dispatched=${total_dispatched} (${triage_dispatched} triage + ${dispatched_count} implementation), processed=${processed_count}/${candidate_count}, target_available=${available_slots}" >>"$LOGFILE"
 	echo "$total_dispatched"
 	return 0
+}
+
+#######################################
+# t3015: Returns 0 (true) if the dispatch loop should take the floor path
+# (forced-serial, "test the waters" semantics) rather than the max path
+# (parallel saturation). Two triggers:
+#   1. Adaptive throttle file present at $_DISPATCH_THROTTLE_FILE — runtime is
+#      degraded (recent worker launch failures), so we want serial dispatch
+#      to verify the runtime is healthy before saturating again.
+#   2. _DISPATCH_FORCE_FLOOR=1 set by an explicit dispatch_floor() caller —
+#      lets diagnostic / single-shot callers force the slow-and-careful path
+#      without modifying the throttle file.
+#
+# Returns 1 (false) otherwise — the default max path dispatches in parallel.
+#
+# Caller contract: $_DISPATCH_THROTTLE_FILE must be set before this function
+# is called. dispatch_max() sets it just before checking; dispatch_floor()
+# inherits via export.
+#######################################
+_dispatch_should_use_floor_path() {
+	[[ -n "${_DISPATCH_FORCE_FLOOR:-}" ]] && return 0
+	[[ -f "${_DISPATCH_THROTTLE_FILE:-${HOME}/.aidevops/logs/dispatch-throttle}" ]] && return 0
+	return 1
+}
+
+#######################################
+# t3015: Public entry point for the forced-serial dispatch path.
+#
+# Thin wrapper around dispatch_max() that sets _DISPATCH_FORCE_FLOOR=1 so the
+# orchestrator delegates to the serial (`floor`) loop regardless of whether the
+# adaptive throttle file is present. Use this when an external caller wants
+# the slow-and-careful "one at a time, verify it lands" behaviour — e.g. a
+# diagnostic harness, a single-issue dispatch test, or a regression escape
+# hatch for operators who want to bypass the parallel max loop without
+# manually creating a throttle file.
+#
+# Pre-t3015 the only way to get serial behaviour was DISPATCH_MAX_PARALLEL=1,
+# which is a runtime tuning knob, not a public API. dispatch_floor() is the
+# named API for "force serial regardless of tuning".
+#
+# Arguments / return value: forwarded as-is to dispatch_max().
+#######################################
+dispatch_floor() {
+	_DISPATCH_FORCE_FLOOR=1 dispatch_max "$@"
 }
 
 _should_run_llm_supervisor() {
@@ -477,7 +544,7 @@ _update_backlog_snapshot() {
 #
 # Arguments:
 #   $1 - dispatched_count (integer, number of workers just launched)
-#   $2 - context label for log (e.g. "fill floor", "recycle loop")
+#   $2 - context label for log (e.g. "dispatch_max", "recycle loop")
 #######################################
 _adaptive_launch_settle_wait() {
 	local dispatched_count="${1:-0}"
@@ -512,7 +579,7 @@ _adaptive_launch_settle_wait() {
 }
 
 #
-# Dispatches deterministic fill floor, then waits adaptively based on
+# Dispatches dispatch_max, then waits adaptively based on
 # how many workers were launched so they can appear in process lists
 # before the next worker count.
 #
@@ -524,24 +591,24 @@ _adaptive_launch_settle_wait() {
 # Phase 2, the child waits a minimum of one additional pulse cycle
 # (3–7 min stable; 10–20 min when wrapper cycles are unstable).
 #######################################
-apply_deterministic_fill_floor() {
+apply_dispatch_max() {
 	if [[ -f "$STOP_FLAG" ]]; then
-		echo "[pulse-wrapper] Deterministic fill floor skipped: stop flag present" >>"$LOGFILE"
+		echo "[pulse-wrapper] Dispatch_max skipped: stop flag present" >>"$LOGFILE"
 		return 0
 	fi
 
 	local fill_dispatched
-	fill_dispatched=$(dispatch_deterministic_fill_floor) || fill_dispatched=0
+	fill_dispatched=$(dispatch_max) || fill_dispatched=0
 	[[ "$fill_dispatched" =~ ^[0-9]+$ ]] || fill_dispatched=0
 
-	_adaptive_launch_settle_wait "$fill_dispatched" "fill floor"
+	_adaptive_launch_settle_wait "$fill_dispatched" "dispatch_max"
 
 	# t2749: Phase 2 — re-enumerate when consolidation created a child during
 	# Phase 1. The sentinel is written by _dispatch_issue_consolidation in
 	# pulse-triage.sh. Named with $$ (top-level PID) so it is cycle-scoped.
 	# Consume it before checking worker slots to prevent double Phase 2 when
-	# apply_deterministic_fill_floor is called again in the same cycle
-	# (early dispatch pass + main fill floor both invoke this function).
+	# apply_dispatch_max is called again in the same cycle
+	# (early dispatch pass + main dispatch both invoke this function).
 	local _p2_sentinel="${HOME}/.aidevops/cache/pulse-cycle-$$-consolidation-fired"
 	if [[ -f "$_p2_sentinel" && ! -f "$STOP_FLAG" ]]; then
 		rm -f "$_p2_sentinel" 2>/dev/null || true
@@ -551,13 +618,13 @@ apply_deterministic_fill_floor() {
 		[[ "$_p2_active" =~ ^[0-9]+$ ]] || _p2_active=0
 		[[ "$_p2_max" =~ ^[0-9]+$ ]] || _p2_max=1
 		if [[ "$_p2_active" -lt "$_p2_max" ]]; then
-			echo "[pulse-wrapper] Deterministic fill floor Phase 2: consolidation child created during Phase 1 (active=${_p2_active}, max=${_p2_max}) — re-enumerating candidates (t2749)" >>"$LOGFILE"
+			echo "[pulse-wrapper] Dispatch_max Phase 2: consolidation child created during Phase 1 (active=${_p2_active}, max=${_p2_max}) — re-enumerating candidates (t2749)" >>"$LOGFILE"
 			local fill_dispatched_p2
-			fill_dispatched_p2=$(dispatch_deterministic_fill_floor) || fill_dispatched_p2=0
+			fill_dispatched_p2=$(dispatch_max) || fill_dispatched_p2=0
 			[[ "$fill_dispatched_p2" =~ ^[0-9]+$ ]] || fill_dispatched_p2=0
-			_adaptive_launch_settle_wait "$fill_dispatched_p2" "fill floor phase 2"
+			_adaptive_launch_settle_wait "$fill_dispatched_p2" "dispatch_max phase 2"
 		else
-			echo "[pulse-wrapper] Deterministic fill floor Phase 2: consolidation child created but slots full (active=${_p2_active}, max=${_p2_max}) — skipping (t2749)" >>"$LOGFILE"
+			echo "[pulse-wrapper] Dispatch_max Phase 2: consolidation child created but slots full (active=${_p2_active}, max=${_p2_max}) — skipping (t2749)" >>"$LOGFILE"
 		fi
 	fi
 	return 0
@@ -754,7 +821,7 @@ maybe_refill_underfilled_pool_during_active_pulse() {
 
 	echo "[pulse-wrapper] Active pulse refill: underfilled ${active_workers}/${max_workers} with runnable=${runnable_count}, queued_without_worker=${queued_without_worker}, idle=${idle_seconds}s, stall=${progress_stall_seconds}s" >>"$LOGFILE"
 	run_underfill_worker_recycler "$max_workers" "$active_workers" "$runnable_count" "$queued_without_worker"
-	dispatch_deterministic_fill_floor >/dev/null || true
+	dispatch_max >/dev/null || true
 
 	echo "$now_epoch"
 	return 0
@@ -803,8 +870,8 @@ _run_preflight_stages() {
 		_preflight_capacity_and_labels || true
 	# t3054: preflight_early_dispatch does NOT use run_stage_with_timeout.
 	# Unlike other preflight stages (single-step operations), this stage
-	# wraps apply_deterministic_fill_floor which iterates N candidates, each
-	# independently protected by run_stage_with_timeout "fill_floor_candidate_*"
+	# wraps apply_dispatch_max which iterates N candidates, each
+	# independently protected by run_stage_with_timeout "dispatch_candidate_*"
 	# (600s per candidate). A 600s GROUP timeout killed in-progress candidates
 	# that were still within their individual budgets (92 timeouts in 1079 runs =
 	# 8.5% failure rate). The group timeout is redundant — per-candidate timeouts
@@ -994,7 +1061,7 @@ _run_early_exit_recycle_loop() {
 			break
 		fi
 
-		dispatch_deterministic_fill_floor >/dev/null || true
+		dispatch_max >/dev/null || true
 		post_active=$(count_active_workers)
 		post_runnable=$(normalize_count_output "$(count_runnable_candidates)")
 		post_queued=$(normalize_count_output "$(count_queued_without_worker)")
