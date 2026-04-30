@@ -3658,3 +3658,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3211 pulse: detect & escalate GitHub Actions runner queue saturation #auto-dispatch #bug ref:GH#21942
 
 - [ ] t3212 claude-proxy adopt-on-EADDRINUSE so multi-instance startup stops printing scary error #auto-dispatch #bug ref:GH#21944
+
+- [ ] t3213 maintainer-gate: switch check-pr concurrency to cancel-in-progress: true #auto-dispatch #bug ref:GH#21947
