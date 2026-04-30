@@ -3595,7 +3595,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3081 document multi-account naming convention for secrets #documentation #enhancement ref:GH#21848 pr:#21851 completed:2026-04-30
 
-- [ ] t3080 Cross-link meta-ads-tooling-cli.md from strategy docs #auto-dispatch #documentation ref:GH#21847
+- [x] t3080 Cross-link meta-ads-tooling-cli.md from strategy docs #auto-dispatch #documentation ref:GH#21847 pr:#21859 completed:2026-04-30
 
 - [ ] t3079 Add multi-account gopass secret template for Meta Ads CLI #auto-dispatch #documentation #enhancement ref:GH#21846
 
