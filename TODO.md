@@ -3634,3 +3634,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3195 fix(pulse): _worker_produced_output uses --head instead of --search to avoid GitHub search-index lag misclassifying workers as branch_orphan #auto-dispatch #bug #framework #pulse ref:GH#21889
 
 - [ ] t3193 pulse: stuck-merge detector + zero-progress circuit breaker (mergeable-but-unmerged) #auto-dispatch #bug ref:GH#21895
+
+- [ ] t3200 full-loop-helper.sh: detect shallow clone before rebase to avoid add/add conflict cascade #auto-dispatch #bug #framework ref:GH#21900
