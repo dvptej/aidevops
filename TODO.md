@@ -3638,3 +3638,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3200 full-loop-helper.sh: detect shallow clone before rebase to avoid add/add conflict cascade #auto-dispatch #bug #framework ref:GH#21900
 
 - [ ] t3201 investigate: worker stuck-loop pattern force-pushes + review_dismissed + close on PR (canonical: #21876) #bug #framework #investigation #parent ref:GH#21901
+
+- [ ] t3202 version-manager release fails non-deterministically on marketplace.json update #auto-dispatch #bug ref:GH#21905
