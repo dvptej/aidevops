@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.20] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3208 complete (pr:#21979 completed:2026-04-30) [skip ci]
+- file investigation task on circuit-breaker trips (#21979)
+- Maintenance: sync ref:GH#21981 to TODO.md [skip ci]
+
+### Fixed
+
+- drop awk END block emitting empty 'with:' at EOF (#21980)
+- add SSH fallback for claim task counter pushes (#21982)
+
 ## [3.13.19] - 2026-04-30
 
 ### Added
