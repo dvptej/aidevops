@@ -3593,7 +3593,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3082 fix: bash 3.2 heredoc parser fails on apostrophe in counter-trend-delta runtime audit rule #auto-dispatch #bug ref:GH#21849 pr:#21852 completed:2026-04-30
 
-- [ ] t3081 document multi-account naming convention for secrets #documentation #enhancement ref:GH#21848
+- [x] t3081 document multi-account naming convention for secrets #documentation #enhancement ref:GH#21848 pr:#21851 completed:2026-04-30
 
 - [ ] t3080 Cross-link meta-ads-tooling-cli.md from strategy docs #auto-dispatch #documentation ref:GH#21847
 
