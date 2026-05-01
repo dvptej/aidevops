@@ -3840,3 +3840,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3398 Avoid Linuxbrew PATH entries on macOS autofs /home #auto-dispatch #bug ref:GH#22180
 
 - [ ] t3399 prevent setup verification from deleting active worktree #auto-dispatch #bug #framework ref:GH#22183
+
+- [ ] t3400 Add helper scripts for AGENTS token efficiency ref:GH#22186
