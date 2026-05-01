@@ -894,7 +894,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 
 
-- [ ] t3388 Investigate setup noninteractive lock overlap during deploy #auto-dispatch #bug ref:GH#22155
+- [x] t3388 Investigate setup noninteractive lock overlap during deploy #auto-dispatch #bug ref:GH#22155 pr:#22162 completed:2026-05-01
 
 
 - [x] t3389 defer OpenCode proxy model discovery off plugin startup #bug ref:GH#22157 pr:#22159 completed:2026-05-01
