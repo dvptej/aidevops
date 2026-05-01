@@ -3829,7 +3829,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3392 Update README recommended OpenCode OpenAI setup ref:GH#22168 pr:#22169 completed:2026-05-01
 
-- [ ] t3391 Treat non-critical runtime deployment timeout as setup warning #auto-dispatch #bug #framework ref:GH#22164
+- [x] t3391 Treat non-critical runtime deployment timeout as setup warning #auto-dispatch #bug #framework ref:GH#22164 pr:#22172 completed:2026-05-01
 
 - [ ] t3396 Prevent setup.sh from removing active implementation worktrees #auto-dispatch #bug #framework ref:GH#22176
 
