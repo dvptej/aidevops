@@ -902,7 +902,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3394 fix setup non-interactive slow post-skill stages and timeout cleanup #auto-dispatch #bug #framework ref:GH#22174
 
-- [ ] t3395 Fix setup deploy no-change missing scripts postflight failure #auto-dispatch #bug #framework ref:GH#22175
+- [x] t3395 Fix setup deploy no-change missing scripts postflight failure #auto-dispatch #bug #framework ref:GH#22175 pr:#22182 completed:2026-05-01
 
 - [ ] t3396 Prevent setup.sh from removing active implementation worktrees #auto-dispatch #bug #framework ref:GH#22176
 
@@ -3833,7 +3833,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3396 Prevent setup.sh from removing active implementation worktrees #auto-dispatch #bug #framework ref:GH#22176
 
-- [ ] t3395 Fix setup deploy no-change missing scripts postflight failure #auto-dispatch #bug #framework ref:GH#22175
+- [x] t3395 Fix setup deploy no-change missing scripts postflight failure #auto-dispatch #bug #framework ref:GH#22175 pr:#22182 completed:2026-05-01
 
 - [ ] t3394 fix setup non-interactive slow post-skill stages and timeout cleanup #auto-dispatch #bug #framework ref:GH#22174
 
