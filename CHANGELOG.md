@@ -10,6 +10,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.90] - 2026-05-02
+
+### Added
+
+- add per-function GraphQL instrumentation to 14 public gh CLI wrappers (#22242)
+
+### Changed
+
+- Fix headless canary default agent regression
+- Maintenance: sync ref:GH#22251 to TODO.md [skip ci]
+- Maintenance: sync ref:GH#22250 to TODO.md [skip ci]
+- Maintenance: mark t3415 complete (pr:#22249 completed:2026-05-01) [skip ci]
+- Maintenance: sync ref:GH#22248 to TODO.md [skip ci]
+- Maintenance: update simplification state registry
+- Maintenance: mark t3414 complete (pr:#22244 completed:2026-05-01) [skip ci]
+- Maintenance: sync ref:GH#22243 to TODO.md [skip ci]
+- Maintenance: mark t3411 complete (pr:#22239 completed:2026-05-01) [skip ci]
+- Fix routines setup push retry (#22239)
+- Maintenance: sync ref:GH#22238 to TODO.md [skip ci]
+- Maintenance: sync ref:GH#22235 to TODO.md [skip ci]
+
+### Fixed
+
+- address worktree registry review feedback (#22246)
+- select latest dispatch cooldown marker (#22245)
+- cap dispatch timing and node_modules restore fanout
+
 ## [3.13.89] - 2026-05-01
 
 ### Changed
