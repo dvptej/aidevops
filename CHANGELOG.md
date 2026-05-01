@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.83] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3405 complete (pr:#22204 completed:2026-05-01) [skip ci]
+- Maintenance: mark t3406 complete (pr:#22203 completed:2026-05-01) [skip ci]
+
+### Fixed
+
+- suppress missing agent source find errors (#22204)
+
 ## [3.13.82] - 2026-05-01
 
 ### Changed
