@@ -3838,3 +3838,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3394 fix setup non-interactive slow post-skill stages and timeout cleanup #auto-dispatch #bug #framework ref:GH#22174
 
 - [ ] t3398 Avoid Linuxbrew PATH entries on macOS autofs /home #auto-dispatch #bug ref:GH#22180
+
+- [ ] t3399 prevent setup verification from deleting active worktree #auto-dispatch #bug #framework ref:GH#22183
