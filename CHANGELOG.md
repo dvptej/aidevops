@@ -10,6 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.65] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3385 complete (pr:#22150)
+- accept REST merged evidence in task completion (#22150)
+- Maintenance: sync ref:GH#22076 to TODO.md [skip ci]
+- Maintenance: mark t3376 complete (pr:#22130 completed:2026-05-01) [skip ci]
+- Maintenance: mark t3227 complete (pr:#22139 completed:2026-05-01) [skip ci]
+
+### Fixed
+
+- harden claim task issue extraction (#22129)
+
 ## [3.13.64] - 2026-05-01
 
 ### Changed
