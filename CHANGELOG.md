@@ -10,6 +10,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.78] - 2026-05-01
+
+### Changed
+
+- harden setup noninteractive cleanup (#22185)
+- Maintenance: sync ref:GH#22183 to TODO.md [skip ci]
+- Maintenance: sync ref:GH#22178 to TODO.md [skip ci]
+- Maintenance: mark t3397 complete (pr:#22181 completed:2026-05-01) [skip ci]
+- Maintenance: mark t3384 complete (pr:#22170) (#22179)
+
 ## [3.13.77] - 2026-05-01
 
 ### Changed
