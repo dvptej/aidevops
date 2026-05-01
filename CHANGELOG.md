@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.58] - 2026-05-01
+
+### Changed
+
+- Refactor: derive Claude proxy models from registry (#22128)
+- Maintenance: mark t3257 complete (pr:#22102 completed:2026-05-01) [skip ci]
+- Maintenance: mark t3379 complete (pr:#22124 completed:2026-05-01) [skip ci]
+
 ## [3.13.57] - 2026-05-01
 
 ### Changed
