@@ -3721,7 +3721,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3237 Standardize session title issue and PR prefix guidance ref:GH#21994 pr:#22000 completed:2026-05-01
 
-- [ ] t3238 Add memory truth-maintenance and debunk workflow #auto-dispatch #enhancement ref:GH#21995
+- [x] t3238 Add memory truth-maintenance and debunk workflow #auto-dispatch #enhancement ref:GH#21995 pr:#22051 completed:2026-05-01
 
 - [ ] t3239 Make OpenCode DB maintenance WAL-aware under active sessions #auto-dispatch #bug ref:GH#21996
 
