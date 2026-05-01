@@ -872,7 +872,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3258 add pulse-diagnose issue subcommand for issue-level worker/PR timelines #auto-dispatch #feat #framework ref:GH#22045
 
-- [ ] t3259 add dispatch-loop counter for repeated worker_branch_orphan on same issue branch #auto-dispatch #bug #framework ref:GH#22049
+- [x] t3259 add dispatch-loop counter for repeated worker_branch_orphan on same issue branch #auto-dispatch #bug #framework ref:GH#22049 pr:#22113 completed:2026-05-01
 
 - [ ] t3257 Reconstruct PR 21876 worker-loop timeline #auto-dispatch #framework #investigation ref:GH#22041
 
@@ -3765,7 +3765,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3256 Make linters-local string literal gate ratchet-based #auto-dispatch #bug ref:GH#22039 pr:#22082 completed:2026-05-01
 
-- [ ] t3259 add dispatch-loop counter for repeated worker_branch_orphan on same issue branch #auto-dispatch #bug #framework ref:GH#22049
+- [x] t3259 add dispatch-loop counter for repeated worker_branch_orphan on same issue branch #auto-dispatch #bug #framework ref:GH#22049 pr:#22113 completed:2026-05-01
 
 - [ ] t3258 add pulse-diagnose issue subcommand for issue-level worker/PR timelines #auto-dispatch #enhancement #framework ref:GH#22045
 
