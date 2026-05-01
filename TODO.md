@@ -870,7 +870,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug blocked-by:t3228 ref:GH#21985
 
-- [ ] t3245 Enforce brief workflow in issue creation harness ref:GH#22008
+- [x] t3245 Enforce brief workflow in issue creation harness ref:GH#22008 pr:#22010 completed:2026-05-01
 
 ## In Progress
 
@@ -3731,6 +3731,6 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3244 Add disruptive OpenCode DB maintenance window mode #auto-dispatch #enhancement ref:GH#22004
 
-- [ ] t3245 Enforce brief workflow in issue creation harness ref:GH#22008
+- [x] t3245 Enforce brief workflow in issue creation harness ref:GH#22008 pr:#22010 completed:2026-05-01
 
 - [ ] t3246 Add prompt-to-hook migration loop for deterministic rules #auto-dispatch #enhancement #self-improvement ref:GH#22009
