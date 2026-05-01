@@ -882,7 +882,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3367 fix setup hang in generate_agent_skills stage #auto-dispatch #bug #framework ref:GH#22077
 
-- [ ] t3370 fix setup noninteractive lock/stall recovery #auto-dispatch #bug ref:GH#22086
+- [x] t3370 fix setup noninteractive lock/stall recovery #auto-dispatch #bug ref:GH#22086 pr:#22189 completed:2026-05-01
 
 - [x] t3372 Fix pulse dry-run hang during repeated pulse-stats sourcing #auto-dispatch #bug ref:GH#22091 pr:#22101 completed:2026-05-01
 
