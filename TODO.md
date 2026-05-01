@@ -963,6 +963,7 @@ t165,Provider-agnostic task claiming via TODO.md,marcusquinn,orchestration archi
 -->
 
 ## Done
+- [x] t3369 Bound serialized setup wait on stale setup process #auto-dispatch #bug #framework ref:GH#22084 pr:#22177 testing:runtime-verified completed:2026-05-01
 - [x] t3390 Fix task-complete-helper merged PR verification gh field drift #auto-dispatch #bug #framework ref:GH#22160 pr:#22163 completed:2026-05-01
 - [x] t3387 Deduplicate TODO entries created around REST-merged task completion #auto-dispatch #bug #framework ref:GH#22153 pr:#22156 testing:self-assessed completed:2026-05-01
 - [x] t3380 Speed up worktree registry prune for large stale backlogs #bug ref:GH#22131 pr:#22137 testing:runtime-verified completed:2026-05-01
@@ -3798,7 +3799,6 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3361 Make setup agent deploy rsync staging resilient to disappearing files #auto-dispatch #bug ref:GH#22063 pr:#22080 completed:2026-05-01
 
-- [ ] t3369 Bound serialized setup wait on stale setup process #auto-dispatch #bug #framework ref:GH#22084
 
 - [ ] t3368 Harden setup OpenCode version check timeout #auto-dispatch #bug ref:GH#22079
 
