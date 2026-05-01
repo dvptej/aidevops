@@ -3747,7 +3747,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3247 Release queued claims when headless canary overload aborts worker launch #auto-dispatch #bug ref:GH#22011 pr:#22019 completed:2026-05-01
 
-- [ ] t3248 Investigate setup.sh non-interactive timeout after prompt deployment #auto-dispatch #bug ref:GH#22012
+- [x] t3248 Investigate setup.sh non-interactive timeout after prompt deployment #auto-dispatch #bug ref:GH#22012 pr:#22030 completed:2026-05-01
 
 - [x] t3249 setup worktree deploy can remove deployed agents directory #auto-dispatch #bug #framework ref:GH#22014 pr:#22033 completed:2026-05-01
 
