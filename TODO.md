@@ -3821,7 +3821,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [x] t3381 Fix merge LaunchAgent stuck in xpcproxy before exec #auto-dispatch #bug ref:GH#22133 pr:#22142 completed:2026-05-01
 
 
-- [ ] t3386 Fix approve command version-sync and REST fallback drift #auto-dispatch #bug ref:GH#22146
+- [x] t3386 Fix approve command version-sync and REST fallback drift #auto-dispatch #bug ref:GH#22146 pr:#22152 completed:2026-05-01
 
 - [x] t3385 Fix task-complete PR merge detection after gh REST fallback #auto-dispatch #bug #framework ref:GH#22143 pr:#22150 completed:2026-05-01
 
