@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.87] - 2026-05-01
+
+### Fixed
+
+- harden pulse merge routine test checks (#22215)
+
 ## [3.13.86] - 2026-05-01
 
 ### Changed
