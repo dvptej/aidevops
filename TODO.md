@@ -3736,3 +3736,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3246 Add prompt-to-hook migration loop for deterministic rules #auto-dispatch #enhancement #self-improvement ref:GH#22009
 
 - [ ] t3247 Release queued claims when headless canary overload aborts worker launch #auto-dispatch #bug ref:GH#22011
+
+- [ ] t3248 Investigate setup.sh non-interactive timeout after prompt deployment #auto-dispatch #bug ref:GH#22012
