@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.31] - 2026-05-01
+
+### Changed
+
+- omit GPT-5.5 sonnet worker variant (#22031)
+- Maintenance: mark t3247 complete (pr:#22019 completed:2026-05-01) [skip ci]
+- restore OpenAI headless worker recovery (#22019)
+
 ## [3.13.30] - 2026-05-01
 
 ### Changed
