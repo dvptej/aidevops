@@ -10,6 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.40] - 2026-05-01
+
+### Changed
+
+- Maintenance: offline claim t3360..t3360 [offline]
+- rollback failed release mutations (#22062)
+- add maintainer-gate required-check alias (#22036)
+
+### Fixed
+
+- retry empty mergeable states (#22047)
+
 ## [3.13.39] - 2026-05-01
 
 ### Changed
