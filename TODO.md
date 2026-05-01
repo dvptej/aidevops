@@ -3722,3 +3722,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3241 Fix memory dedup dry-run count channel #auto-dispatch #bug #self-improvement ref:GH#21998
 
 - [ ] t3240 Make stash cleanup non-blocking in pulse preflight #auto-dispatch #bug ref:GH#21997
+
+- [ ] t3242 Tighten AGENTS progressive disclosure and routing references ref:GH#21999
