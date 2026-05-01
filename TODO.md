@@ -888,7 +888,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [ ] t3382 Fix pre-edit worktree auto-create failure leaving registered worktrees #auto-dispatch #bug ref:GH#22136
 
-- [ ] t3383 fix verify-issue-close-helper PR file parsing for merged PRs #auto-dispatch #bug #framework ref:GH#22138
+- [x] t3383 fix verify-issue-close-helper PR file parsing for merged PRs #auto-dispatch #bug #framework ref:GH#22138 pr:#22144 completed:2026-05-01
 
 - [ ] t3384 optimize skill generator to finish within setup timeout #auto-dispatch #bug #framework ref:GH#22140
 
