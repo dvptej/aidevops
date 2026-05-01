@@ -10,6 +10,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.81] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3402 complete (pr:#22201 completed:2026-05-01) [skip ci]
+- Maintenance: sync ref:GH#22199 to TODO.md [skip ci]
+- Maintenance: sync ref:GH#22197 to TODO.md [skip ci]
+- Maintenance: mark t3403 complete (pr:#22196 completed:2026-05-01) [skip ci]
+- fix quality gate cancellation false failures (#22196)
+- Maintenance: mark t3400 complete (pr:#22193 completed:2026-05-01) [skip ci]
+- add helper scripts for AGENTS token efficiency (#22193)
+- prevent setup removing current worktree (#22190)
+- Maintenance: sync ref:GH#22086 to TODO.md [skip ci]
+- Maintenance: mark t3370 complete (pr:#22189 completed:2026-05-01) [skip ci]
+
+### Fixed
+
+- sanitize launchd PATH generation (#22201)
+- guard snap opencode candidate on non-linux (#22198)
+
 ## [3.13.80] - 2026-05-01
 
 ### Changed
