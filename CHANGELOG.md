@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.61] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3380 complete (pr:#22137 testing:runtime-verified)
+
 ## [3.13.60] - 2026-05-01
 
 ### Changed
