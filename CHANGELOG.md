@@ -10,6 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.59] - 2026-05-01
+
+### Fixed
+
+- harden agent deploy against concurrent races (#22139)
+
 ## [3.13.58] - 2026-05-01
 
 ### Changed
