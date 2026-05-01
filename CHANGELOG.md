@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.75] - 2026-05-01
+
+### Changed
+
+- Maintenance: record setup follow-up tasks
+- bound serialized setup wait on stale setup process (#22177)
+
 ## [3.13.74] - 2026-05-01
 
 ### Changed
