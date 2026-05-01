@@ -10,6 +10,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.52] - 2026-05-01
+
+### Changed
+
+- Maintenance: mark t3253 complete (pr:#22078 completed:2026-05-01) [skip ci]
+- Maintenance: remove duplicate t3364 TODO entry (#22090)
+- Maintenance: mark t3256 complete (pr:#22082 completed:2026-05-01) [skip ci]
+- Maintenance: record t3372 dry-run hang task
+- Maintenance: mark t3240 complete (pr:#22073 completed:2026-05-01) [skip ci]
+
+### Fixed
+
+- declare setup tool update prompt state (#22094)
+- bound setup skill generation (#22088)
+
 ## [3.13.51] - 2026-05-01
 
 ### Added
