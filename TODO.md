@@ -3759,7 +3759,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3251 fast-fail worker dispatch before expensive startup when canary is unhealthy #auto-dispatch #bug ref:GH#22017 pr:#22018 completed:2026-05-01
 
-- [ ] t3253 setup postflight can exceed 900s before Claude config begins #auto-dispatch #bug #framework ref:GH#22023
+- [x] t3253 setup postflight can exceed 900s before Claude config begins #auto-dispatch #bug #framework ref:GH#22023 pr:#22078 completed:2026-05-01
 
 - [x] t3252 Fix gh_create_pr empty origin label args when caller supplies origin label #auto-dispatch #bug ref:GH#22022 pr:#22043 completed:2026-05-01
 
