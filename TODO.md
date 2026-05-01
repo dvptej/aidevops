@@ -3758,3 +3758,9 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3259 add dispatch-loop counter for repeated worker_branch_orphan on same issue branch #auto-dispatch #bug #framework ref:GH#22049
 
 - [ ] t3258 add pulse-diagnose issue subcommand for issue-level worker/PR timelines #auto-dispatch #enhancement #framework ref:GH#22045
+
+- [ ] t3362 fix OAuth pool rotation for canary preflight #bug ref:GH#22065
+
+- [ ] t3360 Bound OpenCode CLI setup validation timeout #auto-dispatch #bug ref:GH#22064
+
+- [ ] t3361 Make setup agent deploy rsync staging resilient to disappearing files #auto-dispatch #bug ref:GH#22063
