@@ -868,7 +868,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [x] t3228 Refactor conflict-pattern classifier below function-complexity gate #auto-dispatch #bug ref:GH#21981 pr:#21986 completed:2026-04-30
 
-- [ ] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug blocked-by:t3228 ref:GH#21985
+- [x] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug blocked-by:t3228 ref:GH#21985 pr:#22044 completed:2026-05-01
 
 - [ ] t3258 add pulse-diagnose issue subcommand for issue-level worker/PR timelines #auto-dispatch #feat #framework ref:GH#22045
 
@@ -3707,7 +3707,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3230 add current OpenAI model fallbacks to tier routing #auto-dispatch #enhancement #models ref:GH#21984
 
-- [ ] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug ref:GH#21985
+- [x] t3231 Bound optional CodeRabbit CLI pre-push review #auto-dispatch #bug ref:GH#21985 pr:#22044 completed:2026-05-01
 
 - [x] t3232 Fix OpenCode DB archive schema drift blocking session pruning #auto-dispatch #bug ref:GH#21987 pr:#21992 completed:2026-04-30
 
