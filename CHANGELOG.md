@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.38] - 2026-05-01
+
+### Changed
+
+- Maintenance: decompose parent task GH#21901 (#22061)
+- Maintenance: sync ref:GH#22045 to TODO.md [skip ci]
+
+### Fixed
+
+- bound optional CodeRabbit pre-push review (#22044)
+
 ## [3.13.37] - 2026-05-01
 
 ### Changed
