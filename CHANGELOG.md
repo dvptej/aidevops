@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.63] - 2026-05-01
+
+### Changed
+
+- release stale claims by PID liveness (#22148)
+- Maintenance: mark t3372 complete (pr:#22101 completed:2026-05-01) [skip ci]
+- update stale pre-check comment in _attempt_orphan_recovery_pr (#22125)
+
 ## [3.13.62] - 2026-05-01
 
 ### Changed
