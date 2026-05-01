@@ -3744,3 +3744,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3249 setup worktree deploy can remove deployed agents directory #auto-dispatch #bug #framework ref:GH#22014
 
 - [ ] t3250 Fix stale maintainer-gate required check compatibility #auto-dispatch #bug ref:GH#22016
+
+- [ ] t3251 fast-fail worker dispatch before expensive startup when canary is unhealthy #auto-dispatch #bug ref:GH#22017
