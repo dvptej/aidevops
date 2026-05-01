@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.13.64] - 2026-05-01
+
+### Changed
+
+- Fix merge LaunchAgent stuck in xpcproxy before exec
+- Maintenance: mark t3216 complete (pr:#22128 completed:2026-05-01) [skip ci]
+
 ## [3.13.63] - 2026-05-01
 
 ### Changed
