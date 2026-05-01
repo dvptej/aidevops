@@ -3785,6 +3785,6 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3371 Bound setup deploy_agents_to_runtimes stage #auto-dispatch #bug #framework ref:GH#22087
 
-- [ ] t3375 Raise token advisory first threshold to 250k #bug ref:GH#22115
+- [x] t3375 Raise token advisory first threshold to 250k #bug ref:GH#22115 pr:#22116 completed:2026-05-01
 
 - [ ] t3376 Track solved-by actor separately from origin labels #auto-dispatch #bug #diagnostics #framework ref:GH#22117
