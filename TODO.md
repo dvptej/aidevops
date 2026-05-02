@@ -4017,4 +4017,4 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3491 Fix pulse not running after release deploy #auto-dispatch #bug ref:GH#22418 pr:#22422 completed:2026-05-02
 
-- [ ] t3492 Remove misleading Anthropic API key warning when OAuth pool is configured #auto-dispatch #bug ref:GH#22428
+- [x] t3492 Remove misleading Anthropic API key warning when OAuth pool is configured #auto-dispatch #bug ref:GH#22428 pr:#22431 completed:2026-05-02
