@@ -3879,7 +3879,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3428 fix campaign status router mismatch #auto-dispatch #bug ref:GH#22271
 
-- [ ] t3427 Integrate plugin namespaces into subagent discovery #auto-dispatch #bug ref:GH#22270
+- [x] t3427 Integrate plugin namespaces into subagent discovery #auto-dispatch #bug ref:GH#22270 pr:#22275 completed:2026-05-02
 
 - [ ] t3426 Fix attribution-check-helper printf option crash #auto-dispatch #bug #framework ref:GH#22268
 
