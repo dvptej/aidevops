@@ -3944,3 +3944,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3456 Fix dispatch timing stale lock CPU runaway #auto-dispatch #bug ref:GH#22314
 
 - [ ] t3457 Normalize escaped newlines in issue bodies #auto-dispatch #bug ref:GH#22316
+
+- [ ] t3458 Fix node_modules restore stale lock spin #bug ref:GH#22317
