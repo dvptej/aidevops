@@ -79,6 +79,7 @@ chmod +x "$TMP/scripts/gh-signature-helper.sh"
 # instead of the real one installed in ~/.aidevops/agents/scripts/.
 cp "$SHIM" "$TMP/scripts/gh"
 chmod +x "$TMP/scripts/gh"
+cp "$REPO_DIR/.agents/scripts/gh-api-instrument.sh" "$TMP/scripts/gh-api-instrument.sh"
 
 # Put stub gh in PATH (for shim's REAL_GH discovery) and the shim in
 # $TMP/scripts (for direct invocation in tests).
@@ -164,13 +165,15 @@ body_file="$TMP/body.md"
 printf 'unsigned body content\n' >"$body_file"
 _reset_log
 "$SHIM_RUN" issue comment 456 --repo owner/repo --body-file "$body_file" 2>/dev/null
-if grep -q "<!-- aidevops:sig -->" "$body_file"; then
-	_pass "sig marker appended to --body-file"
+argv=$(_read_argv)
+resolved_body_file=$(printf '%s\n' "$argv" | awk 'prev { print; exit } $0 == "--body-file" { prev=1 }')
+if [[ -n "$resolved_body_file" && -f "$resolved_body_file" ]] && grep -q "<!-- aidevops:sig -->" "$resolved_body_file"; then
+	_pass "sig marker appended to temporary --body-file"
 else
-	_fail "--body-file sig injection" "file contents: $(cat "$body_file")"
+	_fail "--body-file sig injection" "argv: $argv"
 fi
-if grep -q "unsigned body content" "$body_file"; then
-	_pass "original --body-file content preserved"
+if grep -q "unsigned body content" "$body_file" && ! grep -q "<!-- aidevops:sig -->" "$body_file"; then
+	_pass "original --body-file content preserved without mutation"
 else
 	_fail "--body-file original preservation" ""
 fi
@@ -261,6 +264,38 @@ if [[ "$argv" == "$expected" ]]; then
 	_pass "gh api pass-through"
 else
 	_fail "gh api pass-through" "argv: $argv"
+fi
+
+# =============================================================================
+# Test 11: gh shim records operation-specific instrumentation labels
+# =============================================================================
+echo ""
+echo "Test 11: operation-specific instrumentation labels"
+_reset_log
+export AIDEVOPS_GH_API_LOG="$TMP/gh-api-calls.log"
+rm -f "$AIDEVOPS_GH_API_LOG"
+"$SHIM_RUN" issue list --repo owner/repo 2>/dev/null
+"$SHIM_RUN" pr view 123 --repo owner/repo 2>/dev/null
+if grep -q $'\tgh_issue_list\tgraphql' "$AIDEVOPS_GH_API_LOG" && grep -q $'\tgh_pr_view\tgraphql' "$AIDEVOPS_GH_API_LOG"; then
+	_pass "read/list calls use operation-specific labels"
+else
+	_fail "operation-specific instrumentation labels" "log: $(cat "$AIDEVOPS_GH_API_LOG" 2>/dev/null || true)"
+fi
+
+# =============================================================================
+# Test 12: --json read calls stay on GraphQL to preserve gh-shaped fields
+# =============================================================================
+echo ""
+echo "Test 12: --json read calls do not REST rewrite"
+_reset_log
+export AIDEVOPS_GH_API_LOG="$TMP/gh-api-calls-json.log"
+rm -f "$AIDEVOPS_GH_API_LOG"
+_GH_SHOULD_FALLBACK_OVERRIDE=1 "$SHIM_RUN" pr view 123 --repo owner/repo --json number,statusCheckRollup 2>/dev/null
+argv=$(_read_argv)
+if [[ "$argv" == $'pr\nview\n123\n--repo\nowner/repo\n--json\nnumber,statusCheckRollup' ]] && grep -q $'\tgh_pr_view\tgraphql' "$AIDEVOPS_GH_API_LOG"; then
+	_pass "--json read stays on GraphQL with operation label"
+else
+	_fail "--json read GraphQL preservation" "argv: $argv log: $(cat "$AIDEVOPS_GH_API_LOG" 2>/dev/null || true)"
 fi
 
 # =============================================================================
