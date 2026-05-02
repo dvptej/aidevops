@@ -4007,4 +4007,4 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3486 Block external issue dispatch while issue-triage gate is queued #auto-dispatch #bug #security ref:GH#22399
 
-- [ ] t3484 Repair broken Tabby OpenCode launch profiles #auto-dispatch #bug #framework ref:GH#22397
+- [x] t3484 Repair broken Tabby OpenCode launch profiles #auto-dispatch #bug #framework ref:GH#22397 pr:#22404 completed:2026-05-02
