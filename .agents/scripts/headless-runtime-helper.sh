@@ -264,14 +264,12 @@ _validate_run_args() {
 # Caller passes the cmd array elements as positional args after the two file args.
 # Returns: 0 always (exit code written to exit_code_file).
 #
-# Includes an activity watchdog: if no LLM activity appears in the output
-# file within HEADLESS_ACTIVITY_TIMEOUT_SECONDS (default 300s), the opencode
-# process is killed. This catches rate-limited providers that cause the
-# worker to hang indefinitely waiting for an API response. Without this,
-# stalled workers consume slots permanently and rotation never fires
-# (because the retry logic only runs after the process exits).
-# GH#17442: increased from 90s to 300s — with 335 agents in the system
-# prompt, OpenCode needs 60-120s to initialize before first model output.
+# Includes an activity watchdog. The timeout is a recovery backstop, not a
+# success/failure policy: output-active, CPU-active, and CI-wait states are
+# allowed to continue until the hard elapsed cap, while explicit provider
+# failures still recover promptly. Default is 600s because OpenAI/GPT-5.x
+# workers can spend several minutes reasoning before emitting more JSON/log
+# output; 300s caused false no-output kills before implementation/PR creation.
 _invoke_opencode() {
 	local output_file="$1"
 	local exit_code_file="$2"
@@ -614,36 +612,41 @@ _handle_run_result() {
 	#   can resume the session with a continuation prompt before giving up.
 	# - 124 + no activity → rate_limit as before (provider never responded).
 	if [[ "$exit_code" -eq 124 ]]; then
-		if [[ "$activity_detected" == "1" ]]; then
-			# Worker was making progress, then stalled (stream drop, hung connection).
-			# Store session ID for continuation before deleting output.
-			local discovered_session_for_continue
-			discovered_session_for_continue=$(extract_session_id_from_output "$output_file")
-			if [[ "$role" != "pulse" && -n "$discovered_session_for_continue" ]]; then
-				store_session_id "$provider" "$session_key" "$discovered_session_for_continue" "$selected_model"
-			fi
-			# t2956: Hard-kill path — proactive elapsed-time kill from the
-			# watchdog. Skip continuation, free the slot. The flag is set in
-			# _execute_run_attempt when the .watchdog_stall_killed sentinel
-			# was present alongside .watchdog_killed.
-			if [[ "${_run_watchdog_hard_killed:-0}" -eq 1 ]]; then
-				# Local to avoid duplicating the literal across the file
-				# (string-literal ratchet). The pre-existing per-session cap
-				# branch below uses the same label string.
-				local _hk_label="watchdog_stall_killed"
-				_run_result_label="$_hk_label"
-				_run_failure_reason="$_hk_label"
+		if _activity_output_has_provider_rate_limit "$output_file"; then
+			failure_reason="rate_limit"
+			print_warning "$selected_model watchdog saw provider/rate-limit marker — classifying as rate_limit for rotation"
+		else
+			if [[ "$activity_detected" == "1" ]]; then
+				# Worker was making progress, then stalled (stream drop, hung connection).
+				# Store session ID for continuation before deleting output.
+				local discovered_session_for_continue
+				discovered_session_for_continue=$(extract_session_id_from_output "$output_file")
+				if [[ "$role" != "pulse" && -n "$discovered_session_for_continue" ]]; then
+					store_session_id "$provider" "$session_key" "$discovered_session_for_continue" "$selected_model"
+				fi
+				# t2956: Hard-kill path — proactive elapsed-time kill from the
+				# watchdog. Skip continuation, free the slot. The flag is set in
+				# _execute_run_attempt when the .watchdog_stall_killed sentinel
+				# was present alongside .watchdog_killed.
+				if [[ "${_run_watchdog_hard_killed:-0}" -eq 1 ]]; then
+					# Local to avoid duplicating the literal across the file
+					# (string-literal ratchet). The pre-existing per-session cap
+					# branch below uses the same label string.
+					local _hk_label="watchdog_stall_killed"
+					_run_result_label="$_hk_label"
+					_run_failure_reason="$_hk_label"
+					rm -f "$output_file"
+					print_warning "$selected_model watchdog hard-kill (elapsed ≥ WORKER_STALL_HARD_KILL_SECONDS) — slot freed for re-dispatch (no continuation)"
+					return 79
+				fi
+				_run_result_label="watchdog_stall_continue"
 				rm -f "$output_file"
-				print_warning "$selected_model watchdog hard-kill (elapsed ≥ WORKER_STALL_HARD_KILL_SECONDS) — slot freed for re-dispatch (no continuation)"
-				return 79
+				print_warning "$selected_model watchdog stall with prior activity — will attempt session continuation"
+				return 78
 			fi
-			_run_result_label="watchdog_stall_continue"
-			rm -f "$output_file"
-			print_warning "$selected_model watchdog stall with prior activity — will attempt session continuation"
-			return 78
+			failure_reason="rate_limit"
+			print_warning "$selected_model activity watchdog timeout (no activity) — classifying as rate_limit for rotation"
 		fi
-		failure_reason="rate_limit"
-		print_warning "$selected_model activity watchdog timeout (no activity) — classifying as rate_limit for rotation"
 	else
 		failure_reason=$(classify_failure_reason "$output_file")
 	fi
