@@ -3929,7 +3929,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3449 harden pulse worker canary without lowering safety #auto-dispatch #bug ref:GH#22302
 
-- [ ] t3448 reduce pulse GraphQL budget drain without weakening gates #auto-dispatch #bug ref:GH#22301
+- [x] t3448 reduce pulse GraphQL budget drain without weakening gates #auto-dispatch #bug ref:GH#22301 pr:#22353 completed:2026-05-02
 
 - [ ] t3450 prioritize near-merge open PRs before new dispatch #auto-dispatch #enhancement ref:GH#22303
 
