@@ -3973,7 +3973,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [x] t3462 Fix BSD awk syntax in efficiency speed collection #auto-dispatch #bug ref:GH#22339 pr:#22374 completed:2026-05-02
 
-- [ ] t3474 Align research command names and add deep-research workflow #auto-dispatch #enhancement ref:GH#22369
+- [x] t3474 Align research command names and add deep-research workflow #auto-dispatch #enhancement ref:GH#22369 pr:#22423 completed:2026-05-02
 
 - [ ] t3473 Block secret/private-key reads before model context #auto-dispatch #framework #security ref:GH#22368
 
