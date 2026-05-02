@@ -3995,7 +3995,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3478 _feedback plane parent — capture retention mining and promotion paths #enhancement #framework #parent ref:GH#22373
 
-- [ ] t3482 Add adaptive worker launch staggering #auto-dispatch #enhancement #framework ref:GH#22387
+- [x] t3482 Add adaptive worker launch staggering #auto-dispatch #enhancement #framework ref:GH#22387 pr:#22412 completed:2026-05-02
 
 - [x] t3481 Preserve TODO refs after fallback issue creation #auto-dispatch #bug #framework ref:GH#22381 pr:#22409 completed:2026-05-02
 
