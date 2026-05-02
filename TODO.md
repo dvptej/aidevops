@@ -4024,3 +4024,5 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 - [ ] t3494 Reduce GraphQL list-call pressure that starves pulse dispatch #auto-dispatch #bug ref:GH#22430
 
 - [ ] t3493 Prioritize security-related quality-debt issues in dispatch #auto-dispatch #dispatch #enhancement #quality-debt #security ref:GH#22429
+
+- [ ] t3496 Make issue-sync TODO updates conflict-safe under concurrent task creation #auto-dispatch #bug ref:GH#22433
