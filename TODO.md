@@ -912,7 +912,7 @@ t193,setup.sh fails in non-interactive supervisor deploy step,,bugfix|setup,1h,4
 
 - [x] t3403 Fix quality gate false failures from workflow cancellation #bug ref:GH#22194 pr:#22196 completed:2026-05-01
 
-- [ ] t3457 Normalize escaped newlines in issue bodies #auto-dispatch #bug ref:GH#22316
+- [x] t3457 Normalize escaped newlines in issue bodies #auto-dispatch #bug ref:GH#22316 pr:#22319 completed:2026-05-02
 
 ## In Progress
 
@@ -3945,6 +3945,6 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3456 Fix dispatch timing stale lock CPU runaway #auto-dispatch #bug ref:GH#22314
 
-- [ ] t3457 Normalize escaped newlines in issue bodies #auto-dispatch #bug ref:GH#22316
+- [x] t3457 Normalize escaped newlines in issue bodies #auto-dispatch #bug ref:GH#22316 pr:#22319 completed:2026-05-02
 
 - [x] t3458 Fix node_modules restore stale lock spin #bug ref:GH#22317 pr:#22318 completed:2026-05-02
