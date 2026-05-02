@@ -3977,7 +3977,7 @@ t019.3.4,Update AGENTS.md with Beads integration docs,,beads,1h,45m,2025-12-21T1
 
 - [ ] t3473 Block secret/private-key reads before model context #auto-dispatch #framework #security ref:GH#22368
 
-- [ ] t3472 Add repository layout policy and drift audit #auto-dispatch #enhancement #framework ref:GH#22367
+- [x] t3472 Add repository layout policy and drift audit #auto-dispatch #enhancement #framework ref:GH#22367 pr:#22388 completed:2026-05-02
 
 - [ ] t3471 Clean up root shell script layout #auto-dispatch #bug #framework ref:GH#22366
 
